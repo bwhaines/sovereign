@@ -32,7 +32,7 @@
 
 - name: Create pre-renew hook to stop apache
   copy:
-    content: "#!/bin/bash\n\nservice apache2 stop\n"
+    content: "#!/bin/bash\n\nsystemctl stop apache2\n"
     dest: /etc/letsencrypt/prerenew/apache
     owner: root
     group: root
@@ -40,7 +40,7 @@
 
 - name: Create post-renew hook to start apache
   copy:
-    content: "#!/bin/bash\n\nservice apache2 start\n"
+    content: "#!/bin/bash\n\nsystemctl start apache2\n"
     dest: /etc/letsencrypt/postrenew/apache
     owner: root
     group: root

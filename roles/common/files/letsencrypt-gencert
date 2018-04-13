@@ -8,6 +8,6 @@ done
 # We are using the "standalone" letsencrypt plugin, which runs its own
 # webserver, so we need to temporarily free up the HTTP(S) ports by stopping
 # our own Apache.
-service apache2 stop
+systemctl stop apache2
 /root/letsencrypt/letsencrypt-auto certonly -c /etc/letsencrypt/cli.conf --domains $d
-service apache2 start
+systemctl start apache2
