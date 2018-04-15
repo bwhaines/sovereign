@@ -1,6 +1,6 @@
 #!/bin/bash
 d="$1"
-for i in www mail autoconfig read news cloud git; do
+for i in www; do
   if (getent hosts $i.$1 > /dev/null); then
     d="$d,$i.$1";
   fi
@@ -9,5 +9,5 @@ done
 # webserver, so we need to temporarily free up the HTTP(S) ports by stopping
 # our own Apache.
 systemctl stop apache2
-/root/letsencrypt/letsencrypt-auto certonly -c /etc/letsencrypt/cli.conf --domains $d
+/root/letsencrypt/letsencrypt-auto --installer apache -c /etc/letsencrypt/cli.conf -d $d
 systemctl start apache2
