@@ -61,20 +61,30 @@
   git:
     repo: git://github.com/vstakhov/rspamd.git
     dest: /usr/local/rspamd/
-    version: tags/{{ rspamd_version }}
+    version: tags/{{ rspamd_version }} 
+
+- name: Create Rspamd build directory
+  when: rspamd_installed is failed
+  file: path=/usr/local/rspamd/builddir state=directory
 
 - name: Generate Rspamd makefile
   when: rspamd_installed is failed
-  command: /usr/bin/cmake .
+  command: /usr/bin/cmake ../
   args:
-    chdir: /usr/local/rspamd
+    chdir: /usr/local/rspamd/builddir
 
-- name: Build Rspamd source
+- name: Build and install Rspamd source
   when: rspamd_installed is failed
-  command: /usr/bin/make clean all install
+  become: true
+  become_user: root
+  command: /usr/bin/make install
   args:
-    chdir: /usr/local/rspamd
+    chdir: /usr/local/rspamd/builddir
     creates: /usr/local/bin/rspamd
+
+- name: Copy Rspamd service file into place
+  template: src=etc_rspamd.service dest=/etc/systemd/system/rspamd.service owner=_rspamd group=_rspamd mode="0644"
+  notify: restart rspamd
 
 - name: Create local.d directory
   when: rspamd_installed is failed
@@ -97,13 +107,13 @@
   notify: restart rspamd
 
 - name: Create dkim key directory
-  file: path=/usr/local/lib/rspamd/dkim state=directory owner=_rspamd group=_rspamd
+  file: path=/var/lib/rspamd/dkim state=directory owner=_rspamd group=_rspamd
 
 - name: Generate DKIM keys
   shell: rspamadm dkim_keygen -s default -d {{ item.name }} -k {{ item.name }}.default.key > {{ item.name }}.default.txt
   args:
-    creates: /usr/local/lib/rspamd/dkim/{{ item.name }}.default.key
-    chdir: /usr/local/lib/rspamd/dkim/
+    creates: /var/lib/rspamd/dkim/{{ item.name }}.default.key
+    chdir: /var/lib/rspamd/dkim/
   with_items: "{{ mail_virtual_domains }}"
 
 - name: Start redis

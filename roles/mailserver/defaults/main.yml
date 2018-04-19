@@ -18,6 +18,9 @@ mail_virtual_domains: []
 mail_virtual_users: []
 mail_virtual_aliases: []
 
+#rspamd
+rspamd_version: 1.7.3
+
 # zpush
 zpush_version: 2.1.1-1788
 # common_timezone is a sovereign variable
