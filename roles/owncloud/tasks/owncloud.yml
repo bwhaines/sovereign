@@ -6,6 +6,7 @@
   with_items:
     - postgresql
     - python-psycopg2
+    - php7.0-zip
   tags:
     - dependencies
 
@@ -38,8 +39,16 @@
 - name: Change ownership and permissions of ownCloud directory
   file: owner=www-data
         group=www-data
-        mode=0770
+        mode=0775
         path=/var/www/owncloud
+        recurse=yes
+        state=directory
+
+- name: Tighten permissions of data folder
+  file: owner=www-data
+        group=www-data
+        mode=0770
+        path=/decrypted/owncloud-data
         recurse=yes
         state=directory
 
