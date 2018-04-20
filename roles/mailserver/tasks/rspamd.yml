@@ -56,6 +56,12 @@
   tags:
     - dependencies
 
+- name: Create _rspamd group
+  group: name=_rspamd state=present
+
+- name: Create _rspamd user
+  user: name=_rspamd group=_rspamd state=present home=/decrypted shell=/usr/sbin/nologin
+
 - name: Download Rspamd source
   when: rspamd_installed is failed
   git:
