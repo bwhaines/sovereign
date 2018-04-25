@@ -39,22 +39,22 @@
 - name: Change ownership and permissions of ownCloud directory
   file: owner=www-data
         group=www-data
-        mode=0775
+        mode=775
         path=/var/www/owncloud
-        recurse=yes
-        state=directory
-
-- name: Tighten permissions of data folder
-  file: owner=www-data
-        group=www-data
-        mode=0770
-        path=/decrypted/owncloud-data
         recurse=yes
         state=directory
 
 - name: Move ownCloud data to encrypted filesystem
   command: mv /var/www/owncloud/data /decrypted/owncloud-data creates=/decrypted/owncloud-data
 - file: src=/decrypted/owncloud-data dest=/var/www/owncloud/data owner=www-data group=www-data state=link
+
+- name: Tighten permissions of data folder
+  file: owner=www-data
+        group=www-data
+        mode=770
+        path=/decrypted/owncloud-data
+        recurse=yes
+        state=directory
 
 - name: Configure Apache for ownCloud
   template: src=etc_apache2_sites-available_owncloud.j2 dest=/etc/apache2/sites-available/owncloud.conf group=root
